@@ -10,7 +10,7 @@ import { MarkerClusterer } from "@googlemaps/markerclusterer";
 import type { Marker } from "@googlemaps/markerclusterer";
 import { useEffect, useState, useRef } from "react";
 import trees from "../../data/trees";
-// [{ name: "Oak, English", lat: 43.64, lng: -79.41, key: "ABCD" }]
+import dumpyards from "../../data/dumpyards";
 
 export default function Intro() {
   return (
@@ -21,7 +21,8 @@ export default function Intro() {
           zoom={10}
           mapId={process.env.NEXT_PUBLIC_MAP_ID}
         >
-          <Markers points={trees} />
+          <Markers points={trees} type="tree" />
+          <Markers points={dumpyards} type="dumpyard" />
         </Map>
       </APIProvider>
     </div>
@@ -29,9 +30,9 @@ export default function Intro() {
 }
 
 type Point = google.maps.LatLngLiteral & { key: string };
-type Props = { points: Point[] };
+type Props = { points: Point[]; type: "tree" | "dumpyard" };
 
-export const Markers = ({ points }: Props) => {
+export const Markers = ({ points, type }: Props) => {
   const map = useMap();
   const [markers, setMarkers] = useState<{ [key: string]: Marker }>({});
   const clusterer = useRef<MarkerClusterer | null>(null);
@@ -63,6 +64,15 @@ export const Markers = ({ points }: Props) => {
     });
   };
 
+  const getSymbol = () => {
+    if (type === "tree") {
+      return "🌳"; // Symbol for tree
+    } else if (type === "dumpyard") {
+      return "🗑️"; // Symbol for dump yard
+    }
+    return "";
+  };
+
   return (
     <>
       {points.map((point) => (
@@ -71,7 +81,7 @@ export const Markers = ({ points }: Props) => {
           key={point.key}
           ref={(marker) => setMarkerRef(marker, point.key)}
         >
-          <span style={{ fontSize: "2rem" }}>🚮</span>
+          <span style={{ fontSize: "2rem" }}>{getSymbol()}</span>
         </AdvancedMarker>
       ))}
     </>
