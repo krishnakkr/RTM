@@ -1,4 +1,4 @@
-// Data source: https://open.toronto.ca/dataset/street-tree-data/
+
 
 type RawTree = [string, number, number];
 
@@ -9,7 +9,7 @@ type Tree = {
   lng: number;
 };
 
-const trees: RawTree[] =[
+const trees: RawTree[] = [
   ["Kormangala", 12.934841, 77.624661],
   ["Hsr Layout", 12.913938700584378, 77.6453074477682],
   ["Bellandur", 12.930590958286524, 77.67772388480336],
@@ -58,10 +58,8 @@ const trees: RawTree[] =[
   ["Anjanapura", 12.863345689194735, 77.55230504491705],
   ["Cooke Town", 13.005303014428483, 77.62691092630947],
   ["Ashok Nagar", 12.986461032586252, 77.56904404657045],
-  ["Hennur", 13.03773554808848, 77.65640959727946]
+  ["Hennur", 13.03773554808848, 77.65640959727946],
 ];
-
-
 
 const formatted: Tree[] = trees.map(([name, lat, lng]) => ({
   name,
