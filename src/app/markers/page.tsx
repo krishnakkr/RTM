@@ -11,6 +11,7 @@ import type { Marker } from "@googlemaps/markerclusterer";
 import { useEffect, useState, useRef } from "react";
 import trees from "../../data/trees";
 import dumpyards from "../../data/dumpyards";
+import ultrasonics from "../../data/ultrasonic";
 
 export default function Intro() {
   return (
@@ -23,6 +24,8 @@ export default function Intro() {
         >
           <Markers points={trees} type="tree" />
           <Markers points={dumpyards} type="dumpyard" />
+          {/* <Markers points={ultrasonics} type="ultrasonic" /> */}
+          {/* <Directions/> */}
         </Map>
       </APIProvider>
     </div>
@@ -30,7 +33,7 @@ export default function Intro() {
 }
 
 type Point = google.maps.LatLngLiteral & { key: string };
-type Props = { points: Point[]; type: "tree" | "dumpyard" };
+type Props = { points: Point[]; type: "tree" | "dumpyard" | "ultrasonic" };
 
 export const Markers = ({ points, type }: Props) => {
   const map = useMap();
@@ -66,24 +69,33 @@ export const Markers = ({ points, type }: Props) => {
 
   const getSymbol = () => {
     if (type === "tree") {
-      return "🌳"; // Symbol for tree
+      return "🗑️";
     } else if (type === "dumpyard") {
-      return "🗑️"; // Symbol for dump yard
+      return "🌳";
     }
     return "";
   };
 
   return (
     <>
-      {points.map((point) => (
-        <AdvancedMarker
-          position={point}
-          key={point.key}
-          ref={(marker) => setMarkerRef(marker, point.key)}
-        >
-          <span style={{ fontSize: "2rem" }}>{getSymbol()}</span>
-        </AdvancedMarker>
-      ))}
+      {points.map((point) => {
+        const randomPercentage = Math.floor(Math.random() * 101);
+        return (
+          <AdvancedMarker
+            position={point}
+            key={point.key}
+            ref={(marker) => setMarkerRef(marker, point.key)}
+          >
+            <span style={{ fontSize: "2rem" }}>{getSymbol()}</span>
+            {type === "tree" && (
+              <span style={{ fontSize: "1rem", color: "black" }}>
+                {Math.floor(Math.random() * 101)}%
+              </span>
+            )}
+          </AdvancedMarker>
+        );
+      })}
     </>
   );
+
 };
