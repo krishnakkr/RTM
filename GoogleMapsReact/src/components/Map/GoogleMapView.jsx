@@ -80,6 +80,21 @@ export default function GoogleMapView() {
       zoom={10}
     >
 
+    {markers.map((item)=>{
+        return (
+          <div key={item.name}>
+            <Marker position={item.location} 
+            options={{
+              icon: {
+                url: DustBinPng,
+                scaledSize: new window.google.maps.Size(100, 100) 
+              }
+            }}
+            />
+          </div>
+        )})
+      }
+
       {directions && (
         <Polyline
           path={directions.routes[0].overview_path}
@@ -91,20 +106,7 @@ export default function GoogleMapView() {
         />
       )}
 
-      {markers.map((item)=>{
-        return (
-          <div key={item.name}>
-            <Marker position={item.location} 
-            options={{
-              icon: {
-                url: DustBinPng,
-                scaledSize: new window.google.maps.Size(100, 100) // Set the width and height of the icon
-              }
-            }}
-            />
-          </div>
-        )})
-      }
+      
 
     </GoogleMap>
 ) 
