@@ -58,7 +58,7 @@ export default function GoogleMapView() {
         {
           origin: markers[0].location,
           destination: markers[markers.length - 1].location,
-          waypoints: waypoints.slice(1, -1), // Exclude the first and last waypoints (start and end)
+          waypoints: waypoints.slice(1, -1), 
           travelMode: window.google.maps.TravelMode.DRIVING
         },
         (result, status) => {
