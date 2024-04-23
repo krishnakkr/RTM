@@ -3,8 +3,11 @@ import DustBinPng from '../../assets/Images/Dustbin.png';
 import DumpYard from '../../assets/Images/DumpYard.png';
 import GarbageVan from '../../assets/Images/GarbageVan.png'
 import { useEffect, useState } from 'react';
+import ExtraLocationsObject from './ExtraLocationsObject';
+
 
 export default function GoogleMapView() {
+  const {extraMarkers, generateExtraMarkerComponent, extraMarkerItems} = ExtraLocationsObject();
 
   const [markerComponent, setMarkerComponent] = useState(null);
   
@@ -82,8 +85,8 @@ export default function GoogleMapView() {
   };
   
   const center = {
-    lat: 13.0927,
-    lng: 77.6547
+    lat: 13.0865,
+    lng: 77.6862
   };
 
   const UpdatedMarkers = [
@@ -174,10 +177,9 @@ export default function GoogleMapView() {
         </div>
       );
     }));
-    setMarkerComponent(items);
+    setMarkerComponent([...items,...extraMarkers]);
+    
   };
-
- 
 
   const [directions, setDirections] = useState(null);
   
@@ -206,16 +208,52 @@ export default function GoogleMapView() {
           }
         }
       );
-
-      
     }
     generateMarkerComponent();
+    generateExtraMarkerComponent();
+    drawExtraComponent();
   }, [isLoaded, reCreatePath]);
+
+  const [extraDirections, setExtraDirections] = useState(null);
+  
+  const drawExtraComponent = async() => {
+    setExtraDirections(prev=>null);
+    if (isLoaded && markerItems.length>0) {
+      const directionsService = new window.google.maps.DirectionsService();
+      if(extraMarkerItems?.length>0)
+      {
+        const extraWaypoints = extraMarkerItems.map(marker => ({
+          location: marker.location,
+          stopover: true
+        })); 
+
+        directionsService.route(
+          {
+            origin: extraMarkerItems[0].location,
+            destination: extraMarkerItems[extraMarkerItems.length - 1].location,
+            waypoints: extraWaypoints.slice(1, -1), 
+            travelMode: window.google.maps.TravelMode.DRIVING
+          },
+          (result, status) => {
+            if (status === window.google.maps.DirectionsStatus.OK) {
+              setExtraDirections(prev=>result);
+            } else {
+              console.error(`Error fetching directions: ${status}`);
+            }
+          }
+        );  
+       }
+    }
+  }
 
   useEffect(()=>{
     generateMarkerComponent(); 
     setReCreatePath(prev=>prev+1);
   },[markerItems])
+
+  useEffect(()=>{
+    generateMarkerComponent();
+  },[extraMarkers])
 
 
 
@@ -226,18 +264,26 @@ export default function GoogleMapView() {
       center={center}
       zoom={13}
     >
-      
       { markerComponent}
 
          {directions && (
             <DirectionsRenderer 
             directions={directions}
             options={{
-              suppressMarkers: true 
+              suppressMarkers: true,
+              preserveViewport: true, 
             }}
             />
           )}
-
+          {extraDirections && (
+            <DirectionsRenderer 
+            directions={extraDirections}
+            options={{
+              suppressMarkers: true,
+              preserveViewport: true,
+            }}
+            />
+          )}
     </GoogleMap>
 
     <button className='bg-red-200 w-24 h-10' onClick={()=>{setMarkerItems(UpdatedMarkers);}}>click</button>
