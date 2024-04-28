@@ -11,12 +11,15 @@ import DumpYard from "../../assets/Images/DumpYard.png";
 import GarbageVan from "../../assets/Images/GarbageVan.png";
 import { useEffect, useState } from "react";
 import ExtraLocationsObject from "./ExtraLocationsObject";
+import UltrasonicSensorDisplay from "./Ultrasonicsensor";
 
 export default function GoogleMapView({setLogin}) {
   setLogin(false);
   
   const { extraMarkers, generateExtraMarkerComponent, extraMarkerItems } =
     ExtraLocationsObject();
+
+    const {distance, setDistance} = UltrasonicSensorDisplay();
 
   const [reCreatePath, setReCreatePath] = useState(0);
 
@@ -37,7 +40,7 @@ export default function GoogleMapView({setLogin}) {
         lat: 13.1005,
         lng: 77.6427,
       },
-      percentage: 50,
+      percentage: 82,
     },
     {
       name: "Kannuru",
@@ -45,23 +48,23 @@ export default function GoogleMapView({setLogin}) {
         lat: 13.0927,
         lng: 77.6547,
       },
-      percentage: 58,
+      percentage: 85,
     },
-    // {
-    //   name: "Yerappanahalli",
-    //   location: {
-    //     lat: 13.0865,
-    //     lng: 77.6862,
-    //   },
-    //   percentage: 58
-    // },
+    {
+      name: "Yerappanahalli",
+      location: {
+        lat: 13.0865,
+        lng: 77.6862,
+      },
+      percentage: distance
+    },
     {
       name: "Billeshavale",
       location: {
         lat: 13.0544,
         lng: 77.6709,
       },
-      percentage: 58,
+      percentage: 87,
     },
     {
       name: "Narayanapura",
@@ -69,7 +72,7 @@ export default function GoogleMapView({setLogin}) {
         lat: 13.0629,
         lng: 77.645,
       },
-      percentage: 58,
+      percentage: 88,
     },
     {
       name: "Sampigehalli_GarbageVan",
@@ -111,7 +114,7 @@ export default function GoogleMapView({setLogin}) {
         lat: 13.1005,
         lng: 77.6427,
       },
-      percentage: 50,
+      percentage: 82,
     },
     {
       name: "Kannuru",
@@ -119,7 +122,7 @@ export default function GoogleMapView({setLogin}) {
         lat: 13.0927,
         lng: 77.6547,
       },
-      percentage: 58,
+      percentage: 85,
     },
     {
       name: "Yerappanahalli",
@@ -127,7 +130,7 @@ export default function GoogleMapView({setLogin}) {
         lat: 13.0865,
         lng: 77.6862,
       },
-      percentage: 58,
+      percentage: distance,
     },
     {
       name: "Billeshavale",
@@ -135,7 +138,7 @@ export default function GoogleMapView({setLogin}) {
         lat: 13.0544,
         lng: 77.6709,
       },
-      percentage: 58,
+      percentage: 87,
     },
     {
       name: "Narayanapura",
@@ -143,7 +146,7 @@ export default function GoogleMapView({setLogin}) {
         lat: 13.0629,
         lng: 77.645,
       },
-      percentage: 58,
+      percentage: 88,
     },
     {
       name: "Sampigehalli_GarbageVan",
@@ -212,10 +215,16 @@ export default function GoogleMapView({setLogin}) {
     if (isLoaded && markerItems.length > 0) {
       const directionsService = new window.google.maps.DirectionsService();
 
-      const waypoints = markerItems.map((marker) => ({
-        location: marker.location,
+      let waypoints = [];
+      markerItems.map((marker) => {
+        if(marker.percentage>=79)
+        {
+          waypoints.push({
+            location: marker.location,
         stopover: true,
-      }));
+          })
+        }
+      });
 
       directionsService.route(
         {
@@ -282,6 +291,10 @@ export default function GoogleMapView({setLogin}) {
     generateMarkerComponent();
   }, [extraMarkers]);
 
+  useEffect(()=>{
+      setMarkerItems(UpdatedMarkers);
+  },[distance])
+
   return (
     isLoaded && (
       <>
@@ -309,12 +322,36 @@ export default function GoogleMapView({setLogin}) {
         </GoogleMap>
 
         <button
-          className="bg-red-200 w-24 h-10"
+          className="bg-red-200 h-10"
           onClick={() => {
             setMarkerItems(UpdatedMarkers);
           }}
         >
-          click
+          Connect extra location
+        </button>
+        <button
+          className="bg-green-200  h-10 ml-2"
+          onClick={() => {
+            setDistance(prev=>prev+10);
+          }}
+        >
+          Increment distance by 10
+        </button>
+        <button
+          className="bg-red-200  h-10 ml-2"
+          onClick={() => {
+            setDistance(prev=>prev-10);
+          }}
+        >
+          Decrenent distance by 10
+        </button>
+        <button
+          className="bg-green-200  h-10 ml-2"
+          onClick={() => {
+            console.log(distance)
+          }}
+        >
+          consoleLog distance
         </button>
       </>
     )

@@ -15,16 +15,15 @@ const UltrasonicSensorDisplay = () => {
     return () => socket.disconnect();
   }, []);
 
-  return (
-    <div>
-      <h1>Ultrasonic Sensor Display</h1>
-      <div id="distance">Distance: {distance} cm</div>
-    </div>
-  );
+  // return (
+  //   <div>
+  //     <h1>Ultrasonic Sensor Display</h1>
+  //     <div id="distance">Distance: {distance} cm</div>
+  //   </div>
+  // );
 
-  return {distance};
+  return {distance, setDistance};
 };
 
-// export const {distance}
 
 export default UltrasonicSensorDisplay;
